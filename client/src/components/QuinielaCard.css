@@ -1,0 +1,291 @@
+.quiniela-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-left: 5px solid;
+}
+
+.quiniela-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.quiniela-card.blue {
+  border-left-color: #3498db;
+}
+
+.quiniela-card.green {
+  border-left-color: #27ae60;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  font-size: 2.2rem; /* Más grande para TV */
+  color: #2c3e50;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Optimizaciones para TV */
+@media (min-width: 1920px) {
+  .card-header h2 {
+    font-size: 2.8rem;
+  }
+}
+
+@media (min-width: 2560px) {
+  .card-header h2 {
+    font-size: 3.5rem;
+  }
+}
+
+.card-date {
+  background: #6c757d;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.sorteos-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sorteo-section {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+  margin-bottom: 20px;
+}
+
+.sorteo-header {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.sorteo-title {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.cabeza-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+}
+
+.cabeza-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.cabeza-numero {
+  color: #2c3e50;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.cabeza-descripcion {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.numeros-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: #dee2e6;
+  border: 1px solid #dee2e6;
+}
+
+.numero-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 10px;
+  background: white;
+  border: none;
+  transition: all 0.2s ease;
+  min-height: 80px;
+  justify-content: center;
+}
+
+.numero-item:hover {
+  background: #f8f9fa;
+}
+
+.numero-item.cabeza {
+  background: #e3f2fd;
+}
+
+.numero-item.cabeza .numero-ganador {
+  font-weight: bold;
+}
+
+.numero-sorteo {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.numero-ganador {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+.numero-item.cabeza .numero-ganador {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.sorteo-item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.sorteo-header h3,
+.sorteo-header h4 {
+  font-size: 1.1rem;
+  color: #495057;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.sorteo-resultados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.resultado-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.resultado-item:hover {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.resultado-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resultado-numero {
+  font-size: 2rem; /* Mucho más grande para TV */
+  font-weight: bold;
+  color: #2c3e50;
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Optimizaciones para TV */
+@media (min-width: 1920px) {
+  .resultado-numero {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 2560px) {
+  .resultado-numero {
+    font-size: 3rem;
+  }
+}
+
+.error-message {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+.no-data {
+  color: #6c757d;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .sorteo-resultados {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+  }
+  
+  .resultado-item {
+    padding: 8px;
+  }
+  
+  .resultado-numero {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-content {
+    padding: 15px;
+  }
+  
+  .sorteo-item {
+    padding: 12px;
+  }
+  
+  .sorteo-resultados {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .resultado-label {
+    font-size: 0.7rem;
+  }
+  
+  .resultado-numero {
+    font-size: 1rem;
+  }
+}
