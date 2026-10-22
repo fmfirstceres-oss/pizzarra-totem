@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Quinielapp" />
+    <title>Quinielapp</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        .carousel {
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .item {
+            min-height: 100vh;
+            width: 100%;          /* ocupa todo el ancho */
+            display: flex;
+            justify-content: center;
+            align-items: center;  /* centra vertical */
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="carousel" id="carousel">
+    <div class="item">
+        <!-- React se monta aquí -->
+        <noscript>Necesitas habilitar JavaScript para correr esta app.</noscript>
+        <div id="root"></div>
+    </div>
+</div>
+<script>
+    const carousel = document.getElementById("carousel");
+    let autoScroll;
+    let direction = 1; // 1 = baja, -1 = sube
+
+    function startAutoScroll() {
+        if (autoScroll) return; // evita duplicados
+        autoScroll = setInterval(() => {
+            if (direction === 1) {
+                // bajando
+                if (carousel.scrollTop + carousel.clientHeight >= carousel.scrollHeight - 1) {
+                    direction = -1; // llegó al fondo → cambia a subir
+                } else {
+                    carousel.scrollTop += 2;
+                }
+            } else {
+                // subiendo
+                if (carousel.scrollTop <= 0) {
+                    direction = 1; // llegó arriba → cambia a bajar
+                } else {
+                    carousel.scrollTop -= 2;
+                }
+            }
+        }, 30);
+    }
+
+    function stopAutoScroll() {
+        clearInterval(autoScroll);
+        autoScroll = null;
+    }
+
+    // Detectar posición del mouse
+    carousel.addEventListener("mousemove", (e) => {
+        const rect = carousel.getBoundingClientRect();
+        const y = e.clientY - rect.top; // posición dentro del carrusel
+
+        if (y < 150) {
+            startAutoScroll(); // en los primeros 150px → mover
+        } else {
+            stopAutoScroll();  // fuera de esa zona → detener
+        }
+    });
+
+    // Si el mouse sale → detener
+    carousel.addEventListener("mouseleave", stopAutoScroll);
+
+    // Con la rueda → siempre pausa
+    carousel.addEventListener("wheel", () => {
+        stopAutoScroll();
+    });
+</script>
+</body>
+</html>
