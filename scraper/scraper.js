@@ -181,12 +181,12 @@ class QuinielaScraper {
     }
   }
 
-  async obtenerQuinielaMendoza() {
+  async obtenerQuinielasantafe() {
     try {
-      const res = await this._obtenerQuinielaGenerica('/quinielas/mendoza/resultados-de-hoy', 'Quiniela Mendoza');
+      const res = await this._obtenerQuinielaGenerica('/quinielas/santafe/resultados-de-hoy', 'Quiniela Mendoza');
       
       // Log para debugging
-      console.log('Resultados Quiniela Mendoza:');
+      console.log('Resultados Quiniela Santafe:');
       Object.keys(res.sorteos).forEach(tipo => {
         const sorteo = res.sorteos[tipo];
         if (sorteo.numeros.length > 0) {
@@ -197,7 +197,7 @@ class QuinielaScraper {
       
       return res;
     } catch (error) {
-      console.error('Error al obtener quiniela Mendoza:', error);
+      console.error('Error al obtener quiniela Santafe:', error);
       return { error: 'No se pudieron obtener los resultados' };
     }
   }
