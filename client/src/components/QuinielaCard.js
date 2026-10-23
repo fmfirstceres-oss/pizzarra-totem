@@ -17,12 +17,21 @@ const QuinielaCard = ({ data, title, color }) => {
     );
   }
 
-  // Función para extraer la descripción del sueño del texto de cabeza
+  // Extraer la descripción del sueño del texto de cabeza
   const extractSuenoDescripcion = (texto) => {
     if (!texto) return '';
-    // Buscar el patrón "número - descripción"
-    const match = texto.match(/\d{4}\s*-\s*(.+)/);
-    return match ? match[1] : '';
+    const match = texto.match(/\d{4}\s*-\s*([^(]+)/);
+    return match ? match[1].trim() : '';
+  };
+
+  // Formatear según posición: 1° con 4 cifras, 2° al 10° con 3 cifras
+  const formatearNumero = (pos, numeroRaw) => {
+    if (!numeroRaw) return '';
+    const limpio = String(numeroRaw).replace(/\D/g, '');
+    if (pos === 1) {
+      return limpio.padStart(4, '0').slice(-4);
+    }
+    return limpio.padStart(3, '0').slice(-3);
   };
 
   const renderSorteo = (sorteoData, nombreSorteo, textoCompleto = '') => {
@@ -30,40 +39,53 @@ const QuinielaCard = ({ data, title, color }) => {
       return null;
     }
 
-    // Obtener descripción del sueño si existe
-    const suenoDescripcion = extractSuenoDescripcion(textoCompleto);
+    const suenoDescripcion =
+      sorteoData.descripcion || extractSuenoDescripcion(textoCompleto);
+
+    // Filtrar solo del puesto 1 al 10 y ordenar
+    const primerosDiez = sorteoData.numeros
+      .filter(item => item.sorteo >= 1 && item.sorteo <= 10)
+      .sort((a, b) => a.sorteo - b.sorteo);
+
+    const cabezaNumero = formatearNumero(
+      1,
+      sorteoData.cabeza || primerosDiez.find(i => i.sorteo === 1)?.numero
+    );
 
     return (
       <div className="sorteo-section" key={nombreSorteo}>
         <div className="sorteo-header">
           <h3 className="sorteo-title">{nombreSorteo.toUpperCase()}</h3>
-          {sorteoData.cabeza && (
-            <div className="cabeza-info">
-              <span className="cabeza-label">Cabeza:</span>
-              <span className="cabeza-numero">{sorteoData.cabeza}</span>
+          {cabezaNumero && (
+            <div className="cabeza-banner">
+              <span className="cabeza-label">CABEZA (1°):</span>
+              <span className="cabeza-numero">{cabezaNumero}</span>
               {suenoDescripcion && (
                 <span className="cabeza-descripcion">- {suenoDescripcion}</span>
               )}
             </div>
           )}
         </div>
-        
+
         <div className="numeros-grid">
-          {sorteoData.numeros.map((item, index) => (
-            <div 
-              key={`${nombreSorteo}-${item.sorteo}-${index}`}
-              className={`numero-item ${item.sorteo === 1 ? 'cabeza' : ''}`}
-            >
-              <div className="numero-sorteo">{item.sorteo}°</div>
-              <div className="numero-ganador">{item.numero}</div>
-            </div>
-          ))}
+          {primerosDiez.map((item, index) => {
+            const esCabeza = item.sorteo === 1;
+            const numMostrar = formatearNumero(item.sorteo, item.numero);
+            return (
+              <div
+                key={`${nombreSorteo}-${item.sorteo}-${index}`}
+                className={`numero-item ${esCabeza ? 'cabeza' : ''}`}
+              >
+                <span className="numero-sorteo">{item.sorteo}°</span>
+                <span className="numero-ganador">{numMostrar}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   };
 
-  // Definir el orden y nombres de los sorteos
   const sorteosDisponibles = [
     { key: 'previa', nombre: 'La Previa', textoCompleto: data.sorteos?.previa?.textoCompleto },
     { key: 'primera', nombre: 'La Primera', textoCompleto: data.sorteos?.primera?.textoCompleto },
@@ -72,12 +94,12 @@ const QuinielaCard = ({ data, title, color }) => {
     { key: 'nocturna', nombre: 'Nocturna', textoCompleto: data.sorteos?.nocturna?.textoCompleto }
   ];
 
-  // Filtrar solo los sorteos que tienen datos
-  const sorteosConDatos = sorteosDisponibles.filter(sorteo => 
-    data.sorteos && 
-    data.sorteos[sorteo.key] && 
-    data.sorteos[sorteo.key].numeros && 
-    data.sorteos[sorteo.key].numeros.length > 0
+  const sorteosConDatos = sorteosDisponibles.filter(
+    sorteo =>
+      data.sorteos &&
+      data.sorteos[sorteo.key] &&
+      data.sorteos[sorteo.key].numeros &&
+      data.sorteos[sorteo.key].numeros.length > 0
   );
 
   return (
@@ -89,10 +111,10 @@ const QuinielaCard = ({ data, title, color }) => {
       <div className="card-content">
         {sorteosConDatos.length > 0 ? (
           <div className="sorteos-container">
-            {sorteosConDatos.map(sorteo => 
+            {sorteosConDatos.map(sorteo =>
               renderSorteo(
-                data.sorteos[sorteo.key], 
-                sorteo.nombre, 
+                data.sorteos[sorteo.key],
+                sorteo.nombre,
                 sorteo.textoCompleto
               )
             )}
