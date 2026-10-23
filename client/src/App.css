@@ -13,14 +13,14 @@
 .main-content {
   max-width: 1800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
 }
 
-/* Grilla de 3 columnas verticales una al lado de la otra */
+/* Mantener las 3 columnas verticales una al lado de la otra en pantallas verticales */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 15px;
   align-items: start;
 }
 
@@ -55,7 +55,7 @@
   font-weight: bold;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 600px) {
   .results-grid {
     grid-template-columns: 1fr;
   }
