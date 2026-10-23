@@ -181,9 +181,9 @@ class QuinielaScraper {
     }
   }
 
-  async obtenerQuinielasantafe() {
+  async obtenerQuinielaMendoza() {
     try {
-      const res = await this._obtenerQuinielaGenerica('/quinielas/santafe/resultados-de-hoy', 'Quiniela Mendoza');
+      const res = await this._obtenerQuinielaGenerica('/quinielas/santafe/resultados-de-hoy', 'Quiniela Santafe');
       
       // Log para debugging
       console.log('Resultados Quiniela Santafe:');
