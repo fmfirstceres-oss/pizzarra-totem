@@ -160,10 +160,10 @@
   color: #bdc3c7;
 }
 
-/* Grilla vertical de 2 columnas para los 10 premios (1° al 10°) */
+/* Lista vertical de 1 sola columna del 1° al 10° */
 .numeros-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 1px;
   background: #dee2e6;
 }
