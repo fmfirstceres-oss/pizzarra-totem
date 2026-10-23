@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header';
 import QuinielaCard from './components/QuinielaCard';
-import Quini6Card from './components/Quini6Card';
-import TelekinoCard from './components/TelekinoCard';
 import LoadingSpinner from './components/LoadingSpinner';
 
 function App() {
@@ -58,23 +56,23 @@ function App() {
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        console.error("Error al entrar en pantalla completa:", err);
+        console.error('Error al entrar en pantalla completa:', err);
       });
     } else {
       document.exitFullscreen().catch(err => {
-        console.error("Error al salir de pantalla completa:", err);
+        console.error('Error al salir de pantalla completa:', err);
       });
     }
   };
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.body.classList.toggle("dark-mode");
+    document.body.classList.toggle('dark-mode');
   };
 
   if (loading && !resultados) {
     return (
-      <div className={`app ${darkMode ? "dark" : ""}`}>
+      <div className={`app ${darkMode ? 'dark' : ''}`}>
         <Header />
         <div className="loading-container">
           <LoadingSpinner />
@@ -85,15 +83,15 @@ function App() {
   }
 
   return (
-    <div className={`app ${darkMode ? "dark" : ""}`}>
-      <Header 
+    <div className={`app ${darkMode ? 'dark' : ''}`}>
+      <Header
         ultimaActualizacion={ultimaActualizacion}
         onActualizar={actualizarResultados}
         loading={loading}
         onToggleFullScreen={toggleFullScreen}
         onToggleDarkMode={toggleDarkMode}
       />
-      
+
       <main className="main-content">
         {error && (
           <div className="error-message">
@@ -104,30 +102,24 @@ function App() {
           </div>
         )}
 
+        {/* Diseño de 3 columnas verticales una al lado de la otra */}
         <div className="results-grid">
-          {/* Orden fijo de módulos */}
-          <QuinielaCard 
-            data={resultados?.quinielaNacional} 
-            title="Quiniela Nacional"
-            color="blue"
-          />
-
-          <QuinielaCard 
-            data={resultados?.quinielaMendoza} 
-            title="Quiniela Mendoza"
+          <QuinielaCard
+            data={resultados?.quinielaSantaFe}
+            title="Quiniela Santa Fe"
             color="green"
           />
 
-          <Quini6Card 
-            data={resultados?.quini6} 
-            title="Quini 6"
+          <QuinielaCard
+            data={resultados?.quinielaBuenosAires}
+            title="Quiniela Provincia Bs. As."
             color="purple"
           />
 
-          <TelekinoCard 
-            data={resultados?.telekino} 
-            title="Telekino"
-            color="orange"
+          <QuinielaCard
+            data={resultados?.quinielaNacional}
+            title="Quiniela Nacional"
+            color="blue"
           />
         </div>
 
