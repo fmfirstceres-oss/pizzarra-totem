@@ -49,8 +49,8 @@ async function actualizarResultados() {
 // Actualizar resultados al iniciar el servidor
 actualizarResultados();
 
-// Programar actualización automática cada 30 minutos
-cron.schedule('*/30 * * * *', () => {
+// Programar actualización automática cada 3 minutos para el tótem
+cron.schedule('*/3 * * * *', () => {
   actualizarResultados();
 });
 
