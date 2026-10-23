@@ -18,8 +18,8 @@ const Header = ({ ultimaActualizacion, onActualizar, loading, onToggleFullScreen
     <header className="header">
       <div className="header-content">
         <div className="header-title">
-          <h1>🎲 Resultados de Loterías Argentinas</h1>
-          <p>Quinielas, Quini 6 y Telekino en tiempo real</p>
+          <h1>🎲 Resultados de Quinielas</h1>
+          <p>Santa Fe, Provincia de Buenos Aires y Nacional en tiempo real</p>
         </div>
 
         <div className="header-actions">
