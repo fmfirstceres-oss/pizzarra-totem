@@ -11,16 +11,16 @@ function App() {
   const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    obtenerResultados();
-    // Actualizar cada 5 minutos
-    const interval = setInterval(obtenerResultados, 5 * 60 * 1000);
+ useEffect(() => {
+    obtenerResultados(true);
+    // Actualizar silenciosamente cada 1 minuto en el tótem
+    const interval = setInterval(() => obtenerResultados(false), 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const obtenerResultados = async () => {
+  const obtenerResultados = async (mostrarCarga = false) => {
     try {
-      setLoading(true);
+      if (mostrarCarga) setLoading(true);
       const response = await fetch('/api/resultados');
       if (!response.ok) {
         throw new Error('Error al obtener los resultados');
@@ -33,7 +33,7 @@ function App() {
       setError(err.message);
       console.error('Error:', err);
     } finally {
-      setLoading(false);
+      if (mostrarCarga) setLoading(false);
     }
   };
 
