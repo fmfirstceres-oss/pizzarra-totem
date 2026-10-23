@@ -21,37 +21,26 @@ class QuinielaScraper {
     }
   }
 
-  // Extrae pares (posición, número) leyendo td de a pares dentro de cada <tr>
   _parseTablaPorPares($, $table) {
     const resultados = [];
     if (!$table || $table.length === 0) return resultados;
 
     $table.find('tbody tr').each((i, fila) => {
       const $cells = $(fila).find('td');
-      // Recorremos las celdas de 2 en 2: [pos, numero, pos, numero, ...]
       for (let j = 0; j < $cells.length; j += 2) {
         const posText = $($cells[j]).text().trim();
         const numCell = $cells[j + 1] ? $cells[j + 1] : null;
         const pos = parseInt(posText, 10);
 
-        // Buscar número, puede tener formato con <b> para la cabeza
         let numero = null;
         if (numCell) {
           const boldText = $(numCell).find('b').text().trim();
-          if (boldText) {
-            numero = boldText;
-          } else {
-            numero = $(numCell).text().trim();
-          }
+          numero = boldText ? boldText : $(numCell).text().trim();
         }
 
-        // Limpiar y formatear número
         const match = numero ? numero.match(/\d{1,4}/) : null;
         const numeroCuatroCifras = match ? match[0].padStart(4, '0') : null;
 
-        // Solo conservar premios del 1 al 10:
-        // - Posición 1 (Cabeza): 4 cifras
-        // - Posiciones 2 a 10: últimas 3 cifras
         if (!isNaN(pos) && pos >= 1 && pos <= 10 && numeroCuatroCifras) {
           const numeroFormateado =
             pos === 1 ? numeroCuatroCifras : numeroCuatroCifras.slice(-3);
@@ -63,12 +52,9 @@ class QuinielaScraper {
     return resultados;
   }
 
-  // Extrae información de cabeza incluyendo descripción del sueño
   _extraerInfoCabeza($, $table) {
     const thead = $table.find('thead');
     const textoCompleto = thead.text().trim();
-
-    // Buscar patrón "Cabeza: XXXX - Descripción"
     const cabezaMatch = textoCompleto.match(/Cabeza:\s*(\d{4})\s*-\s*([^(]+)/i);
 
     if (cabezaMatch) {
@@ -82,117 +68,136 @@ class QuinielaScraper {
     return null;
   }
 
-  async _obtenerQuinielaGenerica(pathUrl, nombreDisplay) {
-    try {
-      const $ = await this.obtenerPagina(`${this.baseUrl}${pathUrl}`);
+  async _extraerSorteosDeUrl(pathUrl, nombreDisplay, fechaTexto) {
+    const $ = await this.obtenerPagina(`${this.baseUrl}${pathUrl}`);
 
-      const resultados = {
-        nombre: nombreDisplay,
-        fecha: this.obtenerFecha(),
-        sorteos: {
-          previa: { cabeza: null, numeros: [], textoCompleto: '' },
-          primera: { cabeza: null, numeros: [], textoCompleto: '' },
-          matutina: { cabeza: null, numeros: [], textoCompleto: '' },
-          vespertina: { cabeza: null, numeros: [], textoCompleto: '' },
-          nocturna: { cabeza: null, numeros: [], textoCompleto: '' }
-        }
-      };
+    const resultados = {
+      nombre: nombreDisplay,
+      fecha: fechaTexto,
+      sorteos: {
+        previa: { cabeza: null, numeros: [], textoCompleto: '' },
+        primera: { cabeza: null, numeros: [], textoCompleto: '' },
+        matutina: { cabeza: null, numeros: [], textoCompleto: '' },
+        vespertina: { cabeza: null, numeros: [], textoCompleto: '' },
+        nocturna: { cabeza: null, numeros: [], textoCompleto: '' }
+      }
+    };
 
-      // Recorremos cada tabla y vemos su heading (thead h3) para asignarla
-      $('table').each((i, table) => {
-        const $table = $(table);
-        const heading = $table.find('thead h3').text().toLowerCase();
+    $('table').each((i, table) => {
+      const $table = $(table);
+      const heading = $table.find('thead h3').text().toLowerCase();
 
-        let tipo = null;
-        if (heading.includes('previa')) tipo = 'previa';
-        else if (heading.includes('primera')) tipo = 'primera';
-        else if (heading.includes('matutina')) tipo = 'matutina';
-        else if (heading.includes('vespertina')) tipo = 'vespertina';
-        else if (heading.includes('nocturna')) tipo = 'nocturna';
+      let tipo = null;
+      if (heading.includes('previa')) tipo = 'previa';
+      else if (heading.includes('primera')) tipo = 'primera';
+      else if (heading.includes('matutina')) tipo = 'matutina';
+      else if (heading.includes('vespertina')) tipo = 'vespertina';
+      else if (heading.includes('nocturna')) tipo = 'nocturna';
 
-        if (tipo) {
-          const infoCabeza = this._extraerInfoCabeza($, $table);
-          const pares = this._parseTablaPorPares($, $table);
+      if (tipo) {
+        const infoCabeza = this._extraerInfoCabeza($, $table);
+        const pares = this._parseTablaPorPares($, $table);
 
-          if (pares && pares.length > 0) {
-            pares.sort((a, b) => a.sorteo - b.sorteo);
-            resultados.sorteos[tipo].numeros = pares;
+        if (pares && pares.length > 0) {
+          pares.sort((a, b) => a.sorteo - b.sorteo);
+          resultados.sorteos[tipo].numeros = pares;
 
-            const cabeza =
-              infoCabeza?.numero || pares.find(p => p.sorteo === 1)?.numero;
-            if (cabeza) {
-              resultados.sorteos[tipo].cabeza = cabeza.padStart(4, '0');
-            }
+          const cabeza =
+            infoCabeza?.numero || pares.find(p => p.sorteo === 1)?.numero;
+          if (cabeza) {
+            resultados.sorteos[tipo].cabeza = cabeza.padStart(4, '0');
+          }
 
-            if (infoCabeza) {
-              resultados.sorteos[tipo].textoCompleto = infoCabeza.textoCompleto;
-              resultados.sorteos[tipo].descripcion = infoCabeza.descripcion;
-            }
+          if (infoCabeza) {
+            resultados.sorteos[tipo].textoCompleto = infoCabeza.textoCompleto;
+            resultados.sorteos[tipo].descripcion = infoCabeza.descripcion;
           }
         }
-      });
+      }
+    });
 
-      // Fallback: buscar por encabezados alternativos
-      const tipos = ['previa', 'primera', 'matutina', 'vespertina', 'nocturna'];
-      for (const t of tipos) {
-        if (
-          !resultados.sorteos[t].numeros ||
-          resultados.sorteos[t].numeros.length === 0
-        ) {
-          const selectorHeading = $(`*:contains("${t.toUpperCase()}")`)
-            .filter((i, el) => {
-              const txt = $(el).text().toLowerCase();
-              return (
-                txt.includes(t) &&
-                (txt.includes('quiniela') || txt.includes('sorteo'))
-              );
-            })
-            .first();
+    const tipos = ['previa', 'primera', 'matutina', 'vespertina', 'nocturna'];
+    for (const t of tipos) {
+      if (
+        !resultados.sorteos[t].numeros ||
+        resultados.sorteos[t].numeros.length === 0
+      ) {
+        const selectorHeading = $(`*:contains("${t.toUpperCase()}")`)
+          .filter((i, el) => {
+            const txt = $(el).text().toLowerCase();
+            return (
+              txt.includes(t) &&
+              (txt.includes('quiniela') || txt.includes('sorteo'))
+            );
+          })
+          .first();
 
-          if (selectorHeading && selectorHeading.length) {
-            const tabla = selectorHeading.closest('table');
-            if (tabla.length === 0) {
-              const nextTable = selectorHeading.nextAll('table').first();
-              if (nextTable && nextTable.length) {
-                const infoCabeza = this._extraerInfoCabeza($, nextTable);
-                const pares = this._parseTablaPorPares($, nextTable);
+        if (selectorHeading && selectorHeading.length) {
+          const tabla = selectorHeading.closest('table');
+          if (tabla.length === 0) {
+            const nextTable = selectorHeading.nextAll('table').first();
+            if (nextTable && nextTable.length) {
+              const infoCabeza = this._extraerInfoCabeza($, nextTable);
+              const pares = this._parseTablaPorPares($, nextTable);
 
-                if (pares.length) {
-                  pares.sort((a, b) => a.sorteo - b.sorteo);
-                  resultados.sorteos[t].numeros = pares;
+              if (pares.length) {
+                pares.sort((a, b) => a.sorteo - b.sorteo);
+                resultados.sorteos[t].numeros = pares;
 
-                  const cabeza =
-                    infoCabeza?.numero ||
-                    pares.find(p => p.sorteo === 1)?.numero;
-                  if (cabeza) {
-                    resultados.sorteos[t].cabeza = cabeza.padStart(4, '0');
-                  }
+                const cabeza =
+                  infoCabeza?.numero ||
+                  pares.find(p => p.sorteo === 1)?.numero;
+                if (cabeza) {
+                  resultados.sorteos[t].cabeza = cabeza.padStart(4, '0');
+                }
 
-                  if (infoCabeza) {
-                    resultados.sorteos[t].textoCompleto =
-                      infoCabeza.textoCompleto;
-                    resultados.sorteos[t].descripcion = infoCabeza.descripcion;
-                  }
+                if (infoCabeza) {
+                  resultados.sorteos[t].textoCompleto = infoCabeza.textoCompleto;
+                  resultados.sorteos[t].descripcion = infoCabeza.descripcion;
                 }
               }
             }
           }
         }
       }
-
-      return resultados;
-    } catch (err) {
-      console.error(`Error en _obtenerQuinielaGenerica (${nombreDisplay}):`, err.message);
-      throw err;
     }
+
+    return resultados;
+  }
+
+  _tieneSorteosCargados(resultados) {
+    if (!resultados || !resultados.sorteos) return false;
+    return Object.values(resultados.sorteos).some(
+      s => s && Array.isArray(s.numeros) && s.numeros.length > 0
+    );
+  }
+
+  async _obtenerQuinielaConRespaldoAyer(slugProvincia, nombreDisplay) {
+    // 1. Intentar obtener los sorteos de HOY
+    const hoy = await this._extraerSorteosDeUrl(
+      `/quinielas/${slugProvincia}/resultados-de-hoy`,
+      nombreDisplay,
+      this.obtenerFecha(0)
+    );
+
+    if (this._tieneSorteosCargados(hoy)) {
+      return hoy;
+    }
+
+    // 2. Si todavía no salió La Previa de hoy, traer los de AYER (para mostrar la Nocturna)
+    console.log(`Sin sorteos hoy para ${nombreDisplay}, usando Nocturna de ayer...`);
+    const ayer = await this._extraerSorteosDeUrl(
+      `/quinielas/${slugProvincia}/resultados-de-ayer`,
+      nombreDisplay,
+      this.obtenerFecha(-1)
+    );
+
+    return ayer;
   }
 
   async obtenerQuinielaSantaFe() {
     try {
-      return await this._obtenerQuinielaGenerica(
-        '/quinielas/santafe/resultados-de-hoy',
-        'Quiniela Santa Fe'
-      );
+      return await this._obtenerQuinielaConRespaldoAyer('santafe', 'Quiniela Santa Fe');
     } catch (error) {
       console.error('Error al obtener Quiniela Santa Fe:', error.message);
       return { error: 'No se pudieron obtener los resultados' };
@@ -201,10 +206,7 @@ class QuinielaScraper {
 
   async obtenerQuinielaBuenosAires() {
     try {
-      return await this._obtenerQuinielaGenerica(
-        '/quinielas/buenosaires/resultados-de-hoy',
-        'Quiniela Provincia Bs. As.'
-      );
+      return await this._obtenerQuinielaConRespaldoAyer('buenosaires', 'Quiniela Provincia Bs. As.');
     } catch (error) {
       console.error('Error al obtener Quiniela Buenos Aires:', error.message);
       return { error: 'No se pudieron obtener los resultados' };
@@ -213,18 +215,17 @@ class QuinielaScraper {
 
   async obtenerQuinielaNacional() {
     try {
-      return await this._obtenerQuinielaGenerica(
-        '/quinielas/nacional/resultados-de-hoy',
-        'Quiniela Nacional'
-      );
+      return await this._obtenerQuinielaConRespaldoAyer('nacional', 'Quiniela Nacional');
     } catch (error) {
       console.error('Error al obtener Quiniela Nacional:', error.message);
       return { error: 'No se pudieron obtener los resultados' };
     }
   }
 
-  obtenerFecha() {
-    return new Date().toLocaleDateString('es-AR', {
+  obtenerFecha(diasOffset = 0) {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() + diasOffset);
+    return fecha.toLocaleDateString('es-AR', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
