@@ -267,6 +267,66 @@ class QuinielaScraper {
     }
   }
 
+  async obtenerTelekino() {
+    try {
+      const $ = await this.obtenerPagina(`${this.baseUrl}/telekino/resultados/ultimo-sorteo`);
+      const resultados = { nombre: 'Telekino', fecha: this.obtenerFecha(), sorteos: [] };
+
+      $('.telekino-results, .resultados-telekino, .ultimos-resultados').each((index, container) => {
+        const $container = $(container);
+        const texto = $container.text().trim().replace(/\s+/g, ' ');
+        const numerosMatch = texto.match(/(?:\d{1,2}[\s,]*){15}/g);
+        if (numerosMatch) {
+          numerosMatch.forEach(match => {
+            const numeros = match.match(/\d{1,2}/g);
+            if (numeros && numeros.length === 15) {
+              resultados.sorteos.push({
+                tipo: 'Principal',
+                numeros: numeros.map(n => parseInt(n, 10)),
+                fecha: this.obtenerFecha()
+              });
+            }
+          });
+        }
+      });
+
+      if (resultados.sorteos.length === 0) {
+        $('table').each((index, table) => {
+          const $rows = $(table).find('tr');
+          const numerosEnTabla = [];
+          $rows.each((i, row) => {
+            const $cells = $(row).find('td');
+            $cells.each((j, cell) => {
+              const numero = $(cell).text().trim().match(/\d{1,2}/);
+              if (numero) numerosEnTabla.push(parseInt(numero[0], 10));
+            });
+          });
+          if (numerosEnTabla.length === 15) {
+            resultados.sorteos.push({ tipo: 'Principal', numeros: numerosEnTabla, fecha: this.obtenerFecha() });
+          }
+        });
+      }
+
+      if (resultados.sorteos.length === 0) {
+        const pageText = $('body').text().replace(/\s+/g, ' ');
+        const matches = pageText.match(/(?:\d{1,2}[\s,]*){15}/g);
+        if (matches) {
+          matches.forEach(match => {
+            const numeros = match.match(/\d{1,2}/g);
+            if (numeros && numeros.length === 15) {
+              resultados.sorteos.push({ tipo: 'Principal', numeros: numeros.map(n => parseInt(n, 10)), fecha: this.obtenerFecha() });
+            }
+          });
+        }
+      }
+
+      return resultados;
+    } catch (error) {
+      console.error('Error al obtener Telekino:', error);
+      return { error: 'No se pudieron obtener los resultados' };
+    }
+  }
+
   obtenerFecha() {
     return new Date().toLocaleDateString('es-AR', {
       weekday: 'long',
