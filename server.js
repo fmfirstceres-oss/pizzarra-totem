@@ -16,30 +16,27 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 
 // Almacenamiento en memoria para los resultados
 let resultados = {
+  quinielaSantaFe: null,
+  quinielaBuenosAires: null,
   quinielaNacional: null,
-  quinielaMendoza: null,
-  quini6: null,
-  telekino: null,
   ultimaActualizacion: null
 };
 
 // Función para actualizar todos los resultados
 async function actualizarResultados() {
   try {
-    console.log('Actualizando resultados...');
-    
-    const [nacional, mendoza, quini6, telekino] = await Promise.all([
-      scraper.obtenerQuinielaNacional(),
-      scraper.obtenerQuinielaMendoza(),
-      scraper.obtenerQuini6(),
-      scraper.obtenerTelekino()
+    console.log('Actualizando resultados de Quinielas (Santa Fe, Buenos Aires, Nacional)...');
+
+    const [santaFe, buenosAires, nacional] = await Promise.all([
+      scraper.obtenerQuinielaSantaFe(),
+      scraper.obtenerQuinielaBuenosAires(),
+      scraper.obtenerQuinielaNacional()
     ]);
 
     resultados = {
+      quinielaSantaFe: santaFe,
+      quinielaBuenosAires: buenosAires,
       quinielaNacional: nacional,
-      quinielaMendoza: mendoza,
-      quini6: quini6,
-      telekino: telekino,
       ultimaActualizacion: new Date().toISOString()
     };
 
@@ -62,39 +59,27 @@ app.get('/api/resultados', (req, res) => {
   res.json(resultados);
 });
 
-app.post('/api/actualizar', async (req, res) => {
-  try {
-    await actualizarResultados();
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get('/api/quiniela-santafe', (req, res) => {
+  res.json(resultados.quinielaSantaFe);
 });
-app.get('/api/resultados', (req, res) => {
-  res.json(resultados);
+
+app.get('/api/quiniela-buenosaires', (req, res) => {
+  res.json(resultados.quinielaBuenosAires);
 });
 
 app.get('/api/quiniela-nacional', (req, res) => {
   res.json(resultados.quinielaNacional);
 });
 
-app.get('/api/quiniela-mendoza', (req, res) => {
-  res.json(resultados.quinielaMendoza);
-});
-
-app.get('/api/quini6', (req, res) => {
-  res.json(resultados.quini6);
-});
-
-app.get('/api/telekino', (req, res) => {
-  res.json(resultados.telekino);
-});
-
 // Ruta para forzar actualización
 app.post('/api/actualizar', async (req, res) => {
   try {
     await actualizarResultados();
-    res.json({ mensaje: 'Resultados actualizados correctamente', timestamp: resultados.ultimaActualizacion });
+    res.json({
+      success: true,
+      mensaje: 'Resultados actualizados correctamente',
+      timestamp: resultados.ultimaActualizacion
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar resultados' });
   }
