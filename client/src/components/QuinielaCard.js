@@ -17,14 +17,12 @@ const QuinielaCard = ({ data, title, color }) => {
     );
   }
 
-  // Extraer la descripción del sueño del texto de cabeza
   const extractSuenoDescripcion = (texto) => {
     if (!texto) return '';
     const match = texto.match(/\d{4}\s*-\s*([^(]+)/);
     return match ? match[1].trim() : '';
   };
 
-  // Formatear según posición: 1° con 4 cifras, 2° al 10° con 3 cifras
   const formatearNumero = (pos, numeroRaw) => {
     if (!numeroRaw) return '';
     const limpio = String(numeroRaw).replace(/\D/g, '');
@@ -42,7 +40,6 @@ const QuinielaCard = ({ data, title, color }) => {
     const suenoDescripcion =
       sorteoData.descripcion || extractSuenoDescripcion(textoCompleto);
 
-    // Filtrar solo del puesto 1 al 10 y ordenar
     const primerosDiez = sorteoData.numeros
       .filter(item => item.sorteo >= 1 && item.sorteo <= 10)
       .sort((a, b) => a.sorteo - b.sorteo);
@@ -86,6 +83,7 @@ const QuinielaCard = ({ data, title, color }) => {
     );
   };
 
+  // Orden cronológico del día
   const sorteosDisponibles = [
     { key: 'previa', nombre: 'La Previa', textoCompleto: data.sorteos?.previa?.textoCompleto },
     { key: 'primera', nombre: 'La Primera', textoCompleto: data.sorteos?.primera?.textoCompleto },
@@ -102,6 +100,12 @@ const QuinielaCard = ({ data, title, color }) => {
       data.sorteos[sorteo.key].numeros.length > 0
   );
 
+  // Seleccionamos SOLAMENTE el último sorteo cargado (el sorteo vigente)
+  const sorteoVigente =
+    sorteosConDatos.length > 0
+      ? sorteosConDatos[sorteosConDatos.length - 1]
+      : null;
+
   return (
     <div className={`quiniela-card ${color}`}>
       <div className="card-header">
@@ -109,14 +113,12 @@ const QuinielaCard = ({ data, title, color }) => {
         <span className="card-date">{data.fecha}</span>
       </div>
       <div className="card-content">
-        {sorteosConDatos.length > 0 ? (
+        {sorteoVigente ? (
           <div className="sorteos-container">
-            {sorteosConDatos.map(sorteo =>
-              renderSorteo(
-                data.sorteos[sorteo.key],
-                sorteo.nombre,
-                sorteo.textoCompleto
-              )
+            {renderSorteo(
+              data.sorteos[sorteoVigente.key],
+              sorteoVigente.nombre,
+              sorteoVigente.textoCompleto
             )}
           </div>
         ) : (
