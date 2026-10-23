@@ -4,288 +4,228 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.3s ease;
-  border-left: 5px solid;
+  border-top: 6px solid;
+  display: flex;
+  flex-direction: column;
 }
 
-.quiniela-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
-
-.quiniela-card.blue {
-  border-left-color: #3498db;
+.app.dark .quiniela-card {
+  background: #1e2732;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 .quiniela-card.green {
-  border-left-color: #27ae60;
+  border-top-color: #27ae60;
+}
+
+.quiniela-card.purple {
+  border-top-color: #8e44ad;
+}
+
+.quiniela-card.blue {
+  border-top-color: #2980b9;
 }
 
 .card-header {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid #dee2e6;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
   align-items: center;
+  text-align: center;
+}
+
+.app.dark .card-header {
+  background: linear-gradient(135deg, #25303d 0%, #1e2732 100%);
+  border-bottom-color: #34495e;
 }
 
 .card-header h2 {
-  font-size: 2.2rem; /* Más grande para TV */
+  font-size: 1.8rem;
   color: #2c3e50;
   margin: 0;
-  font-weight: bold;
+  font-weight: 800;
 }
 
-/* Optimizaciones para TV */
-@media (min-width: 1920px) {
-  .card-header h2 {
-    font-size: 2.8rem;
-  }
-}
-
-@media (min-width: 2560px) {
-  .card-header h2 {
-    font-size: 3.5rem;
-  }
+.app.dark .card-header h2 {
+  color: #ffffff;
 }
 
 .card-date {
   background: #6c757d;
   color: white;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: 500;
+  text-transform: capitalize;
 }
 
 .card-content {
-  padding: 20px;
+  padding: 15px;
 }
 
 .sorteos-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .sorteo-section {
-  border: 1px solid #e9ecef;
+  border: 1px solid #dee2e6;
   border-radius: 10px;
   overflow: hidden;
   background: white;
-  margin-bottom: 20px;
+}
+
+.app.dark .sorteo-section {
+  background: #25303d;
+  border-color: #34495e;
 }
 
 .sorteo-header {
   background: #f8f9fa;
-  padding: 15px 20px;
+  padding: 12px 15px;
   border-bottom: 1px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app.dark .sorteo-header {
+  background: #1a222c;
+  border-bottom-color: #34495e;
 }
 
 .sorteo-title {
   color: #2c3e50;
-  margin: 0 0 10px 0;
-  font-size: 1.4rem;
-  font-weight: 600;
-  text-align: left;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
 }
 
-.cabeza-info {
+.app.dark .sorteo-title {
+  color: #ecf0f1;
+}
+
+.cabeza-banner {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.app.dark .cabeza-banner {
+  background: #15324b;
+  border-color: #2980b9;
 }
 
 .cabeza-label {
-  color: #6c757d;
-  font-weight: 500;
+  color: #1565c0;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.app.dark .cabeza-label {
+  color: #64b5f6;
 }
 
 .cabeza-numero {
-  color: #2c3e50;
-  font-weight: bold;
-  font-size: 1.1rem;
+  color: #0d47a1;
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.app.dark .cabeza-numero {
+  color: #ffffff;
 }
 
 .cabeza-descripcion {
-  color: #6c757d;
+  color: #495057;
   font-style: italic;
+  font-size: 0.95rem;
 }
 
+.app.dark .cabeza-descripcion {
+  color: #bdc3c7;
+}
+
+/* Grilla vertical de 2 columnas para los 10 premios (1° al 10°) */
 .numeros-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: #dee2e6;
-  border: 1px solid #dee2e6;
+}
+
+.app.dark .numeros-grid {
+  background: #34495e;
 }
 
 .numero-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 15px 10px;
+  justify-content: space-between;
+  padding: 10px 18px;
   background: white;
-  border: none;
-  transition: all 0.2s ease;
-  min-height: 80px;
-  justify-content: center;
 }
 
-.numero-item:hover {
-  background: #f8f9fa;
+.app.dark .numero-item {
+  background: #25303d;
 }
 
 .numero-item.cabeza {
-  background: #e3f2fd;
+  background: #fff8e1;
+  font-weight: bold;
 }
 
-.numero-item.cabeza .numero-ganador {
-  font-weight: bold;
+.app.dark .numero-item.cabeza {
+  background: #3a321a;
 }
 
 .numero-sorteo {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #6c757d;
-  font-weight: 500;
-  margin-bottom: 5px;
-}
-
-.numero-ganador {
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: #2c3e50;
-  text-decoration: underline;
-}
-
-.numero-item.cabeza .numero-ganador {
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.sorteo-item {
-  background: #f8f9fa;
-  border-radius: 10px;
-  padding: 15px;
-  border: 1px solid #e9ecef;
-}
-
-.sorteo-header h3,
-.sorteo-header h4 {
-  font-size: 1.1rem;
-  color: #495057;
-  margin: 0 0 10px 0;
   font-weight: 600;
 }
 
-.sorteo-resultados {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
+.app.dark .numero-sorteo {
+  color: #95a5a6;
 }
 
-.resultado-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  transition: all 0.2s ease;
-}
-
-.resultado-item:hover {
-  background: #e3f2fd;
-  border-color: #2196f3;
-}
-
-.resultado-label {
-  font-size: 0.8rem;
-  color: #6c757d;
-  font-weight: 500;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.resultado-numero {
-  font-size: 2rem; /* Mucho más grande para TV */
-  font-weight: bold;
+.numero-ganador {
+  font-size: 1.35rem;
+  font-weight: 700;
   color: #2c3e50;
-  background: linear-gradient(45deg, #3498db, #2980b9);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: monospace;
 }
 
-/* Optimizaciones para TV */
-@media (min-width: 1920px) {
-  .resultado-numero {
-    font-size: 2.5rem;
-  }
+.app.dark .numero-ganador {
+  color: #ecf0f1;
 }
 
-@media (min-width: 2560px) {
-  .resultado-numero {
-    font-size: 3rem;
-  }
+.numero-item.cabeza .numero-ganador {
+  font-size: 1.5rem;
+  color: #d35400;
 }
 
-.error-message {
-  color: #dc3545;
-  text-align: center;
-  padding: 20px;
-  font-style: italic;
+.app.dark .numero-item.cabeza .numero-ganador {
+  color: #f39c12;
 }
 
 .no-data {
   color: #6c757d;
   text-align: center;
-  padding: 20px;
+  padding: 25px;
   font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .card-header {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-  
-  .sorteo-resultados {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 8px;
-  }
-  
-  .resultado-item {
-    padding: 8px;
-  }
-  
-  .resultado-numero {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .card-content {
-    padding: 15px;
-  }
-  
-  .sorteo-item {
-    padding: 12px;
-  }
-  
-  .sorteo-resultados {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .resultado-label {
-    font-size: 0.7rem;
-  }
-  
-  .resultado-numero {
-    font-size: 1rem;
-  }
 }
