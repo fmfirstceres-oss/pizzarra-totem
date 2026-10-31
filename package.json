@@ -1,0 +1,14 @@
+{
+  "name": "pizarra-quiniela-horizontal",
+  "version": "1.0.0",
+  "description": "Pizarra horizontal 16:9 de quinielas en vivo con slider automatico de 10s por sorteo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.2"
+  }
+}
