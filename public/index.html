@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizarra Horizontal 16:9 - Quiniela en Vivo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #07132c;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6vh 0.6vw;
+        }
+
+        /* CONTENEDOR 16:9 HORIZONTAL */
+        .pizarra {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #0082c8;
+            border: 5px solid #1b3582;
+            box-shadow: inset 0 0 0 2px #38bdf8, 0 0 20px rgba(0, 0, 0, 0.75);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* ================= ENCABEZADO AZUL OSCURO HORIZONTAL ================= */
+        .top-section {
+            background: linear-gradient(180deg, #1b3582 0%, #24479e 100%);
+            padding: 0.9vh 1.4vw;
+            border-bottom: 3px solid #102254;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5vw;
+        }
+
+        .brand-left {
+            display: flex;
+            align-items: center;
+            gap: 1.4vw;
+        }
+
+        .quiniela-logo {
+            font-family: 'Trebuchet MS', 'Arial Black', sans-serif;
+            font-style: italic;
+            font-weight: 900;
+            font-size: clamp(2rem, 3.8vw, 3.8rem);
+            color: #f58426;
+            line-height: 1;
+            text-shadow: 2px 3px 5px rgba(0, 0, 0, 0.6);
+        }
+
+        .turno-holder {
+            background: linear-gradient(180deg, #25509e 0%, #163675 55%, #1d438a 100%);
+            border: 2px solid #4a7bd6;
+            border-radius: 8px;
+            padding: 0.5vh 2.2vw;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.25), 0 3px 6px rgba(0,0,0,0.45);
+            text-align: center;
+            min-width: 18vw;
+        }
+
+        .turno-texto {
+            font-family: 'Trebuchet MS', Impact, sans-serif;
+            font-weight: 900;
+            font-size: clamp(1.5rem, 2.7vw, 2.8rem);
+            color: #f58426;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.75);
+        }
+
+        /* INDICADORES DEL SLIDER DE SORTEOS */
+        .slider-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6vh;
+            flex: 1;
+        }
+
+        .turnos-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5vw;
+            flex-wrap: wrap;
+        }
+
+        .turno-pill {
+            background: rgba(15, 35, 89, 0.75);
+            border: 1px solid #4a7bd6;
+            color: #93c5fd;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-weight: 800;
+            font-size: clamp(0.75rem, 1.05vw, 1.15rem);
+            padding: 0.4vh 0.9vw;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+        }
+
+        .turno-pill.activo {
+            background: #f58426;
+            border-color: #ffffff;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(245, 132, 38, 0.8);
+            transform: scale(1.06);
+        }
+
+        .progress-track {
+            width: 80%;
+            max-width: 420px;
+            height: 6px;
+            background: rgba(15, 35, 89, 0.9);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(74, 123, 214, 0.6);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #f58426 0%, #fbbf24 100%);
+            transform-origin: left center;
+            transition: width 0.1s linear;
+        }
+
+        .estado-slider {
+            font-size: clamp(0.7rem, 0.85vw, 0.95rem);
+            color: #dbeafe;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        /* SORTEO DEL DIA + FICHAS DE FECHA */
+        .sorteo-dia-box {
+            display: flex;
+            align-items: center;
+            gap: 0.6vw;
+        }
+
+        .flecha-sorteo {
+            background: #ffffff;
+            color: #1e293b;
+            padding: 0.6vh 1vw;
+            border-radius: 4px 16px 16px 4px;
+            font-weight: 900;
+            font-size: clamp(0.85rem, 1.1vw, 1.2rem);
+            line-height: 1.1;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.35);
+        }
+
+        .dia-fichas {
+            display: flex;
+            gap: 4px;
+        }
+
+        .ficha-dia {
+            background: linear-gradient(180deg, #ffffff 0%, #e5e7eb 100%);
+            color: #1e293b;
+            font-family: Impact, Arial, sans-serif;
+            font-size: clamp(1.8rem, 2.8vw, 3rem);
+            font-weight: 900;
+            width: clamp(36px, 3vw, 52px);
+            height: clamp(44px, 6.2vh, 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #9ca3af;
+            border-bottom: 3px solid #6b7280;
+            border-radius: 3px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        }
+
+        /* ================= CUERPO HORIZONTAL 16:9 (2 MITADES: 1-10 y 11-20) ================= */
+        .board-horizontal {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2vw;
+            background: linear-gradient(180deg, #0088ce 0%, #0077b8 100%);
+            padding: 1vh 1.2vw;
+            min-height: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+
+        .board-horizontal.fade-transition {
+            opacity: 0.2;
+        }
+
+        .mitad-columna {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55vh;
+            min-height: 0;
+            background: rgba(0, 58, 108, 0.18);
+            padding: 0.7vh 0.7vw;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* CABECERAS BLANCAS POR MITAD: POS | NACIONAL | PROVINCIA | SANTA FE */
+        .headers-row {
+            display: flex;
+            gap: 0.5vw;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .header-pos {
+            width: 11%;
+            background: #ffffff;
+            color: #1b3582;
+            font-family: Georgia, serif;
+            font-weight: 900;
+            font-size: clamp(0.95rem, 1.35vw, 1.45rem);
+            text-align: center;
+            padding: 0.5vh 2px;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+        }
+
+        .header-lot {
+            flex: 1;
+            background: #ffffff;
+            color: #1b3582;
+            font-family: Georgia, serif;
+            font-weight: 900;
+            font-size: clamp(1rem, 1.45vw, 1.55rem);
+            text-align: center;
+            padding: 0.5vh 4px;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+            text-transform: uppercase;
+        }
+
+        .filas-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.45vh;
+            min-height: 0;
+        }
+
+        .fila-premio {
+            flex: 1;
+            display: flex;
+            align-items: stretch;
+            gap: 0.5vw;
+            width: 100%;
+            min-height: 0;
+        }
+
+        /* Flecha blanca izquierda de posición (1 a 20) */
+        .pos-arrow {
+            width: 11%;
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+            color: #0066ad;
+            font-family: Impact, 'Arial Black', sans-serif;
+            font-size: clamp(1.1rem, 1.65vw, 1.85rem);
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px 18px 18px 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+            line-height: 1;
+        }
+
+        .pos-arrow.pos-cabeza {
+            background: linear-gradient(180deg, #fef08a 0%, #facc15 100%);
+            color: #1e293b;
+            border: 1px solid #ca8a04;
+        }
+
+        /* Ranura metálica gris donde van las fichas */
+        .ranura-metalica {
+            flex: 1;
+            background: linear-gradient(180deg, #8b959e 0%, #abb4bc 45%, #909aa3 100%);
+            border: 1px solid #5a6570;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+            border-radius: 3px;
+            display: flex;
+            gap: 2px;
+            padding: 2px;
+        }
+
+        /* Ficha blanca individual para los premios 2° al 20° (3 cifras) */
+        .ficha-num {
+            flex: 1;
+            background: #ffffff;
+            color: #000000;
+            font-family: Impact, 'Arial Narrow', Arial, sans-serif;
+            font-size: clamp(1.3rem, 2.2vw, 2.45rem);
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #9ca3af;
+            border-right: 2px solid #4b5563;
+            border-bottom: 2px solid #4b5563;
+            border-radius: 2px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.45);
+            text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.35);
+            line-height: 1;
+        }
+
+        /* Ficha blanca individual exclusiva para la CABEZA / 1° PREMIO (4 cifras más grandes) */
+        .ficha-cabeza {
+            flex: 1;
+            background: #ffffff;
+            color: #000000;
+            font-family: Impact, 'Arial Narrow', Arial, sans-serif;
+            font-size: clamp(1.5rem, 2.55vw, 2.85rem);
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #9ca3af;
+            border-right: 2px solid #4b5563;
+            border-bottom: 2px solid #4b5563;
+            border-radius: 2px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+            line-height: 1;
+        }
+
+        /* Espacio gris vacío dentro de la ranura metálica */
+        .ficha-vacia {
+            flex: 1;
+            background: transparent;
+        }
+
+        /* ================= PIE DE PÁGINA AZUL OSCURO ================= */
+        .footer-bar {
+            background: linear-gradient(180deg, #162f75 0%, #0f2359 100%);
+            padding: 0.5vh 1.4vw;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 2px solid #284b9e;
+            flex-shrink: 0;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-logo {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-text {
+            color: #ffffff;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-weight: 800;
+            font-size: clamp(0.85rem, 1.1vw, 1.15rem);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .footer-fecha {
+            color: #93c5fd;
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            font-weight: 700;
+            font-size: clamp(0.8rem, 1vw, 1.05rem);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="pizarra">
+    <!-- ENCABEZADO SUPERIOR HORIZONTAL -->
+    <div class="top-section">
+        <div class="brand-left">
+            <div class="quiniela-logo">Quiniela</div>
+            <div class="turno-holder">
+                <span class="turno-texto" id="turnoText">PREVIA</span>
+            </div>
+        </div>
+
+        <div class="slider-panel">
+            <div class="turnos-pills" id="turnosPills"></div>
+            <div class="progress-track" id="progressTrack">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="estado-slider" id="estadoSlider">ACTUALIZANDO SORTEOS...</div>
+        </div>
+
+        <div class="sorteo-dia-box">
+            <div class="flecha-sorteo" id="etiquetaSorteoDia">
+                SORTEO<br>DEL DIA
+            </div>
+            <div class="dia-fichas">
+                <div class="ficha-dia" id="diaDecena">-</div>
+                <div class="ficha-dia" id="diaUnidad">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUERPO HORIZONTAL 16:9 DIVIDIDO EN 2 COLUMNAS (1° a 10° | 11° a 20°) -->
+    <div class="board-horizontal" id="boardHorizontal">
+        <!-- MITAD IZQUIERDA: POSICIONES 1 A 10 -->
+        <div class="mitad-columna">
+            <div class="headers-row">
+                <div class="header-pos">POS</div>
+                <div class="header-lot">NACIONAL</div>
+                <div class="header-lot">PROVINCIA</div>
+                <div class="header-lot">SANTA FE</div>
+            </div>
+            <div class="filas-container" id="colIzquierda"></div>
+        </div>
+
+        <!-- MITAD DERECHA: POSICIONES 11 A 20 -->
+        <div class="mitad-columna">
+            <div class="headers-row">
+                <div class="header-pos">POS</div>
+                <div class="header-lot">NACIONAL</div>
+                <div class="header-lot">PROVINCIA</div>
+                <div class="header-lot">SANTA FE</div>
+            </div>
+            <div class="filas-container" id="colDerecha"></div>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <div class="footer-bar">
+        <div class="footer-brand">
+            <svg class="footer-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="42" stroke="white" stroke-width="8" stroke-dasharray="200 60" />
+                <circle cx="38" cy="35" r="5" fill="white" />
+                <circle cx="62" cy="35" r="5" fill="white" />
+                <circle cx="32" cy="55" r="5" fill="white" />
+                <circle cx="50" cy="65" r="5" fill="white" />
+                <circle cx="68" cy="55" r="5" fill="white" />
+            </svg>
+            <span class="footer-text">LOTERIA DE SANTA FE</span>
+        </div>
+        <div class="footer-fecha" id="footerFecha">FECHA: --/--/----</div>
+    </div>
+</div>
+
+<script>
+    // MARCA DE REEMPLAZO: El servidor Express inyecta datosGlobales aquí.
+    /*INYECCION_DE_DATOS*/
+
+    var TIEMPO_RECARGA = 30000;       // Consultar al servidor cada 30 segundos
+    var TIEMPO_SLIDER_MS = 10000;     // 10 segundos por cada sorteo en el slider
+    var ordenTurnos = ['Previa', 'Primera', 'Matutina', 'Vespertina', 'Nocturna'];
+
+    var turnosParaRotar = [];
+    var indiceTurnoActual = 0;
+    var ultimoCambioMs = Date.now();
+    var firmaTurnosPrevia = '';
+
+    function rellenarCeros(texto, largo) {
+        var s = String(texto || '');
+        while (s.length < largo) {
+            s = '0' + s;
+        }
+        return s;
+    }
+
+    function tieneNumerosCargados(lista) {
+        if (!lista || !lista.length) return false;
+        for (var i = 0; i < lista.length; i++) {
+            var limpio = String(lista[i] || '').replace(/\D/g, '');
+            if (limpio.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function construirRanuraHTML(numeroRaw, esCabeza) {
+        var texto = numeroRaw ? String(numeroRaw) : '';
+        var soloDigitos = texto.replace(/\D/g, '');
+
+        if (!soloDigitos || texto.indexOf('-') !== -1) {
+            return '<div class="ranura-metalica">' +
+                   '<div class="ficha-vacia"></div>' +
+                   '<div class="ficha-vacia"></div>' +
+                   '<div class="ficha-vacia"></div>' +
+                   '<div class="ficha-vacia"></div>' +
+                   '</div>';
+        }
+
+        var c4 = rellenarCeros(soloDigitos, 4);
+        c4 = c4.substring(c4.length - 4);
+
+        if (esCabeza) {
+            return '<div class="ranura-metalica">' +
+                   '<div class="ficha-cabeza">' + c4.charAt(0) + '</div>' +
+                   '<div class="ficha-cabeza">' + c4.charAt(1) + '</div>' +
+                   '<div class="ficha-cabeza">' + c4.charAt(2) + '</div>' +
+                   '<div class="ficha-cabeza">' + c4.charAt(3) + '</div>' +
+                   '</div>';
+        } else {
+            var c3 = c4.substring(1);
+            return '<div class="ranura-metalica">' +
+                   '<div class="ficha-vacia"></div>' +
+                   '<div class="ficha-num">' + c3.charAt(0) + '</div>' +
+                   '<div class="ficha-num">' + c3.charAt(1) + '</div>' +
+                   '<div class="ficha-num">' + c3.charAt(2) + '</div>' +
+                   '</div>';
+        }
+    }
+
+    function actualizarDiaDelMes(fechaStr, esDeAyer) {
+        var dia = rellenarCeros(new Date().getDate(), 2);
+        if (fechaStr) {
+            var match = String(fechaStr).match(/\b(\d{1,2})\b/);
+            if (match && match[1]) {
+                dia = rellenarCeros(match[1], 2);
+            }
+        }
+        document.getElementById('diaDecena').innerText = dia.charAt(0);
+        document.getElementById('diaUnidad').innerText = dia.charAt(1);
+
+        var etiqueta = document.getElementById('etiquetaSorteoDia');
+        if (esDeAyer) {
+            etiqueta.innerHTML = 'SORTEOS<br>DE AYER';
+        } else {
+            etiqueta.innerHTML = 'SORTEO<br>DEL DIA';
+        }
+
+        document.getElementById('footerFecha').innerText =
+            (esDeAyer ? 'RESULTADOS DEL DIA ANTERIOR (' : 'RESULTADOS DEL DIA EN CURSO (') +
+            (fechaStr || '--/--/----') + ')';
+    }
+
+    function calcularTurnosDisponibles(data) {
+        if (!data || !data.sorteos || data.sorteos.length === 0) {
+            return [];
+        }
+        var detectados = [];
+        for (var i = 0; i < ordenTurnos.length; i++) {
+            var candidato = ordenTurnos[i];
+            for (var k = 0; k < data.sorteos.length; k++) {
+                var item = data.sorteos[k];
+                if (
+                    item.nombre &&
+                    item.nombre.toLowerCase() === candidato.toLowerCase() &&
+                    tieneNumerosCargados(item.numeros)
+                ) {
+                    detectados.push(candidato);
+                    break;
+                }
+            }
+        }
+        return detectados;
+    }
+
+    function renderizarPillsTurnos(turnoActivo) {
+        var contenedor = document.getElementById('turnosPills');
+        var html = '';
+        var lista = turnosParaRotar.length > 0 ? turnosParaRotar : ['Previa'];
+
+        for (var i = 0; i < lista.length; i++) {
+            var t = lista[i];
+            var clase = (t.toLowerCase() === String(turnoActivo || '').toLowerCase())
+                ? 'turno-pill activo'
+                : 'turno-pill';
+            html += '<div class="' + clase + '">' + t + '</div>';
+        }
+        contenedor.innerHTML = html;
+
+        var estadoEl = document.getElementById('estadoSlider');
+        var trackEl = document.getElementById('progressTrack');
+        var data = (typeof datosGlobales !== 'undefined' && datosGlobales) ? datosGlobales : null;
+        var esDeAyer = data && data.esDeAyer;
+
+        if (turnosParaRotar.length <= 1) {
+            // Slider detenido (ej: recién salió La Previa del día en curso)
+            trackEl.style.visibility = 'hidden';
+            estadoEl.innerText = 'SLIDER DETENIDO • MOSTRANDO ' + (turnoActivo || 'PREVIA').toUpperCase() + ' HASTA EL PROXIMO SORTEO';
+        } else {
+            trackEl.style.visibility = 'visible';
+            if (esDeAyer) {
+                estadoEl.innerText = 'SLIDER ACTIVO (10s) • SORTEOS DEL DIA ANTERIOR HASTA SORTEAR LA PREVIA DE HOY';
+            } else {
+                estadoEl.innerText = 'SLIDER ACTIVO (10s) • ROTANDO ' + turnosParaRotar.length + ' SORTEOS DEL DIA ACTUAL';
+            }
+        }
+    }
+
+    function dibujarTableroVacio() {
+        actualizarDiaDelMes(null, false);
+        var htmlIzq = '';
+        var htmlDer = '';
+        for (var i = 0; i < 10; i++) {
+            var posIzq = i + 1;
+            var posDer = i + 11;
+            htmlIzq += '<div class="fila-premio">' +
+                       '<div class="pos-arrow ' + (posIzq === 1 ? 'pos-cabeza' : '') + '">' + posIzq + '</div>' +
+                       construirRanuraHTML('----', posIzq === 1) +
+                       construirRanuraHTML('----', posIzq === 1) +
+                       construirRanuraHTML('----', posIzq === 1) +
+                       '</div>';
+            htmlDer += '<div class="fila-premio">' +
+                       '<div class="pos-arrow">' + posDer + '</div>' +
+                       construirRanuraHTML('----', false) +
+                       construirRanuraHTML('----', false) +
+                       construirRanuraHTML('----', false) +
+                       '</div>';
+        }
+        document.getElementById('colIzquierda').innerHTML = htmlIzq;
+        document.getElementById('colDerecha').innerHTML = htmlDer;
+    }
+
+    function renderizarPizarra(data, turno) {
+        if (!data || !data.sorteos || data.sorteos.length === 0) {
+            dibujarTableroVacio();
+            return;
+        }
+
+        document.getElementById('turnoText').innerText = turno;
+        actualizarDiaDelMes(data.fecha, !!data.esDeAyer);
+        renderizarPillsTurnos(turno);
+
+        var sorteosDelHorario = [];
+        for (var m = 0; m < data.sorteos.length; m++) {
+            if (data.sorteos[m].nombre && data.sorteos[m].nombre.toLowerCase() === turno.toLowerCase()) {
+                sorteosDelHorario.push(data.sorteos[m]);
+            }
+        }
+
+        var numsNacional = null;
+        var numsProvincia = null;
+        var numsSantaFe = null;
+
+        for (var n = 0; n < sorteosDelHorario.length; n++) {
+            var nombreLot = String(sorteosDelHorario[n].loteria || '').toLowerCase();
+            if (nombreLot.indexOf('nac') !== -1 || nombreLot.indexOf('ciudad') !== -1) {
+                numsNacional = sorteosDelHorario[n].numeros;
+            } else if (nombreLot.indexOf('prov') !== -1 || nombreLot.indexOf('buenos') !== -1 || nombreLot.indexOf('bs') !== -1) {
+                numsProvincia = sorteosDelHorario[n].numeros;
+            } else if (nombreLot.indexOf('santa') !== -1 || nombreLot.indexOf('fe') !== -1) {
+                numsSantaFe = sorteosDelHorario[n].numeros;
+            }
+        }
+
+        if (!numsNacional && sorteosDelHorario[0]) numsNacional = sorteosDelHorario[0].numeros;
+        if (!numsProvincia && sorteosDelHorario[1]) numsProvincia = sorteosDelHorario[1].numeros;
+        if (!numsSantaFe && sorteosDelHorario[2]) numsSantaFe = sorteosDelHorario[2].numeros;
+
+        numsNacional = numsNacional || [];
+        numsProvincia = numsProvincia || [];
+        numsSantaFe = numsSantaFe || [];
+
+        var htmlIzq = '';
+        var htmlDer = '';
+
+        for (var i = 0; i < 10; i++) {
+            var idxIzq = i;       // 0 a 9 (Posiciones 1 a 10)
+            var idxDer = i + 10;  // 10 a 19 (Posiciones 11 a 20)
+            var esCabeza = (idxIzq === 0);
+
+            htmlIzq += '<div class="fila-premio">' +
+                       '<div class="pos-arrow ' + (esCabeza ? 'pos-cabeza' : '') + '">' + (idxIzq + 1) + '</div>' +
+                       construirRanuraHTML(numsNacional[idxIzq], esCabeza) +
+                       construirRanuraHTML(numsProvincia[idxIzq], esCabeza) +
+                       construirRanuraHTML(numsSantaFe[idxIzq], esCabeza) +
+                       '</div>';
+
+            htmlDer += '<div class="fila-premio">' +
+                       '<div class="pos-arrow">' + (idxDer + 1) + '</div>' +
+                       construirRanuraHTML(numsNacional[idxDer], false) +
+                       construirRanuraHTML(numsProvincia[idxDer], false) +
+                       construirRanuraHTML(numsSantaFe[idxDer], false) +
+                       '</div>';
+        }
+
+        document.getElementById('colIzquierda').innerHTML = htmlIzq;
+        document.getElementById('colDerecha').innerHTML = htmlDer;
+    }
+
+    function sincronizarDatosConSlider() {
+        var data = (typeof datosGlobales !== 'undefined' && datosGlobales) ? datosGlobales : null;
+        if (!data || !data.sorteos || data.sorteos.length === 0) {
+            dibujarTableroVacio();
+            return;
+        }
+
+        var nuevosTurnos = calcularTurnosDisponibles(data);
+        if (nuevosTurnos.length === 0) {
+            nuevosTurnos = [data.turnoVigente || 'Previa'];
+        }
+
+        var nuevaFirma = (data.fecha || '') + '|' + (data.esDeAyer ? 'AYER' : 'HOY') + '|' + nuevosTurnos.join(',');
+
+        if (nuevaFirma !== firmaTurnosPrevia) {
+            firmaTurnosPrevia = nuevaFirma;
+            turnosParaRotar = nuevosTurnos;
+            // Si acaba de salir un sorteo nuevo hoy, posicionamos el slider o mostramos el único disponible
+            if (turnosParaRotar.length === 1) {
+                indiceTurnoActual = 0;
+            } else if (indiceTurnoActual >= turnosParaRotar.length) {
+                indiceTurnoActual = 0;
+            }
+            ultimoCambioMs = Date.now();
+        } else {
+            turnosParaRotar = nuevosTurnos;
+        }
+
+        var turnoMostrar = turnosParaRotar[indiceTurnoActual] || turnosParaRotar[0];
+        renderizarPizarra(data, turnoMostrar);
+    }
+
+    function cicloSliderTick() {
+        var data = (typeof datosGlobales !== 'undefined' && datosGlobales) ? datosGlobales : null;
+        if (!data || turnosParaRotar.length <= 1) {
+            // Si solo hay 1 sorteo (ej: salió La Previa de hoy y aún no salió La Primera), el slider permanece detenido
+            document.getElementById('progressFill').style.width = '100%';
+            return;
+        }
+
+        var transcurrido = Date.now() - ultimoCambioMs;
+        var porcentaje = Math.min(100, (transcurrido / TIEMPO_SLIDER_MS) * 100);
+        document.getElementById('progressFill').style.width = porcentaje + '%';
+
+        if (transcurrido >= TIEMPO_SLIDER_MS) {
+            ultimoCambioMs = Date.now();
+            indiceTurnoActual = (indiceTurnoActual + 1) % turnosParaRotar.length;
+            var boardEl = document.getElementById('boardHorizontal');
+            boardEl.classList.add('fade-transition');
+            setTimeout(function() {
+                renderizarPizarra(data, turnosParaRotar[indiceTurnoActual]);
+                boardEl.classList.remove('fade-transition');
+            }, 180);
+        }
+    }
+
+    async function consultarServidorEnVivo() {
+        try {
+            var respuesta = await fetch('/api/datos?_t=' + Date.now(), {
+                cache: 'no-store',
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache'
+                }
+            });
+            if (respuesta.ok) {
+                var nuevosDatos = await respuesta.json();
+                if (nuevosDatos && nuevosDatos.sorteos && nuevosDatos.sorteos.length > 0) {
+                    datosGlobales = nuevosDatos;
+                    sincronizarDatosConSlider();
+                }
+            }
+        } catch (err) {
+            console.error('Error consultando /api/datos:', err);
+        }
+    }
+
+    function iniciarEcosistema() {
+        sincronizarDatosConSlider();
+        setInterval(cicloSliderTick, 100);
+        setInterval(consultarServidorEnVivo, TIEMPO_RECARGA);
+    }
+
+    window.onload = iniciarEcosistema;
+</script>
+
+</body>
+</html>
